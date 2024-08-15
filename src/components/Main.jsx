@@ -1,4 +1,4 @@
-import { Button, Checkbox, Col, Form, Input, Row, Select, Space, Typography } from 'antd';
+import { Button, Checkbox, Col, Form, Input, Row, Select, Space } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { TableauViz } from '../vendor/tableau';
 import React from 'react';

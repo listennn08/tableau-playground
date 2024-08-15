@@ -15,7 +15,8 @@ export default function Main() {
     height: '600px',
     tableauUrl: '',
     hideTabs: true,
-    attributes: []
+    attributes: [],
+    filters: [],
   }
   Object.assign(initialValues, JSON.parse(localStorage.getItem('tableauConfig')))
 
@@ -46,10 +47,12 @@ export default function Main() {
       connectedAppClientSecret: values.connectedAppClientSecret,
       connectedAppSecretId: values.connectedAppSecretId,
       tableauUser: values.tableauUser,
-      ...(values.attributes.reduce((obj, item) => ({
-        ...obj,
-        [item.key]: item.value,
-      }), {}))
+      ...(values.attributes
+          .filter((el) => el)
+          .reduce((obj, item) => ({
+            ...obj,
+            [item.key]: item.value,
+          }), {}))
     })
     const resp = (
       await axios.post('/token', body, {
@@ -69,11 +72,12 @@ export default function Main() {
         name="config"
         form={form}
         initialValues={{...initialValues}}
-        labelCol={{ span: 8 }}
+        labelCol={{ span: 10 }}
+        colon={false}
         autoComplete='off'
       >
-        <Row>
-          <Col span={12}>
+        <Row justify="start" gutter={10}>
+          <Col span={10}>
             <Form.Item label="Connected App Client ID" name="connectedAppClientId" rules={[{ required: true }]}>
               <Input.Password placeholder="Connected App Client ID" />
             </Form.Item>
@@ -98,7 +102,9 @@ export default function Main() {
                         <Form.Item name={[name, 'value']} {...restField}>
                           <Input placeholder="Attribute Value" />
                         </Form.Item>
-                        <CloseOutlined onClick={() => remove(name)} />
+                        <Form.Item>
+                          <CloseOutlined style={{ fontSize: '16px' }} onClick={() => remove(name)} />
+                        </Form.Item>
                       </Space>
                     ))}
                     <Button onClick={() => add()}>Add User Attribute</Button>
@@ -108,29 +114,76 @@ export default function Main() {
             </Form.Item>
           </Col>
 
-          <Col span={12}>
-            <Form.Item label="Width" name="width">
-              <Input placeholder="Width" />
-            </Form.Item>
-            <Form.Item label="Height" name="height">
-              <Input placeholder="Height" />
-            </Form.Item>
-            <Form.Item label="Toolbar" name="toolbar">
-              <Select>
-                <Select.Option value="visible">Visible</Select.Option>
-                <Select.Option value="hidden">Hidden</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="Hide Tabs" name="hideTabs" valuePropName="checked">
-              <Checkbox>Hide Tabs</Checkbox>
-            </Form.Item>
-            <Form.Item label="Tableau Report URL" name="tableauUrl" rules={[{ required: true, type: 'url' }]}>
-              <Input placeholder="Tableau Report URL" />
-            </Form.Item>
+          <Col span={14}>
+            <Row justify="center">
+              <Col span={8}>
+                <Form.Item label="Width" name="width">
+                  <Input placeholder="Width" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item label="Height" name="height">
+                  <Input placeholder="Height" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item label="Toolbar" name="toolbar">
+                  <Select>
+                    <Select.Option value="visible">Visible</Select.Option>
+                    <Select.Option value="hidden">Hidden</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={4}>
+              <Col span={8}>
+                <Form.Item label="Hide Tabs" name="hideTabs" valuePropName="checked">
+                  <Checkbox>Hide Tabs</Checkbox>
+                </Form.Item>
+              </Col>
+
+              <Col span={16}>
+                <Form.Item label="Tableau Report URL" labelCol={{ span: 8 }} name="tableauUrl" rules={[{ required: true, type: 'url' }]}>
+                  <Input placeholder="Tableau Report URL" />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row>
+              {/* <Col span={14}>
+                <Form.Item label="Filter" labelCol={{ span: 6 }} name="filters">
+                  <Form.List name="filters">
+                    {(fields, { add, remove }) => (
+                      <>
+                        {fields.map(({ key, name, ...restField }) => (
+                          <>
+                            <Space>
+                              <Form.Item name={[name, 'key']} {...restField}>
+                                <Input placeholder="Filter name" />
+                              </Form.Item>
+                              <Form.Item name={[name, 'value']} {...restField}>
+                                <Input placeholder="Filter value" />
+                              </Form.Item>
+                              <Form.Item>
+                                <Button>Apply Filter</Button>
+                              </Form.Item>
+                              <Form.Item>
+                                <CloseOutlined style={{ fontSize: '16px' }} onClick={() => remove(name)} />
+                              </Form.Item>
+                            </Space>
+                          </>
+                        ))}
+                        <Button onClick={() => add()}>Add Filter</Button>
+                      </>
+                    )}
+                  </Form.List>
+                </Form.Item>
+              </Col> */}
+            </Row>
+              
           </Col>
         </Row>
       </Form>
-      <Space>
+      <Space style={{ marginBottom: '1rem' }}>
         <Button type="primary" onClick={loadViz}>Load Viz</Button>
         <Button onClick={handleSaveToLocal}>Save config to Local</Button>
       </Space>
